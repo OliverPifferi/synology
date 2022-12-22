@@ -1,0 +1,11 @@
+docker run -d --name=hassio_supervisor \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /var/run/dbus:/var/run/dbus \
+-v /volume1/docker/homeassistant:/data \
+-e SUPERVISOR_SHARE=/volume1/docker/homeassistant \
+-e SUPERVISOR_NAME=hassio_supervisor \
+-e HOMEASSISTANT_REPOSITORY=homeassistant/qemux86-64-homeassistant \
+--security-opt seccomp=unconfined \
+--privileged \
+--restart always \
+homeassistant/amd64-hassio-supervisor
