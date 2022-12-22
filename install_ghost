@@ -1,0 +1,6 @@
+docker run -d --name=ghost \
+-p 2368:2368 \
+-e url=https://yourblog.com \
+-v /volume1/docker/ghost:/var/lib/ghost/content \
+--restart always \
+ghost
