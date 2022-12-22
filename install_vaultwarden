@@ -1,0 +1,6 @@
+docker run -d --name=vaultwarden \
+-p 3012:3012 \
+-p 5151:80 \
+-v /volume1/docker/vaultwarden:/data \
+--restart always \
+vaultwarden/server
