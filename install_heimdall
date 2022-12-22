@@ -1,0 +1,9 @@
+docker run -d --name=heimdall \
+-p 8056:80 \
+-p 7543:443 \
+-e PUID=1000 \
+-e PGID=100 \
+-e TZ=Europe/Berlin \
+-v /volume1/docker/heimdall:/config \
+--restart always \
+lscr.io/linuxserver/heimdall:latest
