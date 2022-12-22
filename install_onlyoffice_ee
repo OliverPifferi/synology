@@ -1,0 +1,7 @@
+docker run -d --name=onlyoffice \
+-p 9981:80 \
+-v /volume1/docker/onlyoffice/logs:/var/log/onlyoffice \
+-v /volume1/docker/onlyoffice/data:/var/www/onlyoffice/Data \
+--restart always \
+-e JWT_ENABLED='true' -e JWT_SECRET='your-secret-key' \
+onlyoffice/documentserver-ee
