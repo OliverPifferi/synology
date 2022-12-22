@@ -1,0 +1,8 @@
+#!/bin/bash
+docker run --rm \
+--user 1000:100 \
+-v /volume1/docker/synapse/data:/data \
+-e SYNAPSE_CONFIG_PATH=/data/homeserver.yaml \
+-e SYNAPSE_SERVER_NAME=your.matrixserver.com \
+-e SYNAPSE_REPORT_STATS=yes \
+matrixdotorg/synapse:latest generate
