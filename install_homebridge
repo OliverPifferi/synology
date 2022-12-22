@@ -1,0 +1,6 @@
+docker run -d --name=homebridge \
+-e DSM_HOSTNAME=DiskStation \
+-v /volume1/docker/homebridge:/homebridge \
+--net=host \
+--restart always \
+oznu/homebridge
