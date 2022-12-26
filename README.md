@@ -1,6 +1,6 @@
 # Synology- & Portainer-samples
 
-An official GitHub-repository for my Synology- and Portainer-based installation scripts in case you once may need one of them!
+This is a collection inspired by Marius Bogdan Lixandru and his famous collection of Docker-related tutorials on https://mariushosting.com and my own adopted anthology of scripts and deployments I personally use or have used in the past.
 
 For using scripts in the "portainer"-folder, Portainer must first be installed via the "Docker"-app on the Synology-NAS (https://github.com/OliverPifferi/synology/blob/main/install_portainer_ee) and then deployed as a stack from within Portainer's web interface.
 
