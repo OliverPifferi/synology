@@ -16,7 +16,7 @@ services:
       APACHE_RUN_GROUP_ID: PGID
     
     volumes:
-      - /volume1/docker/classicpress:/data
+      - /volume1/docker/classicpress/data:/data
       
   db:
     image: mysql:5.7
@@ -28,7 +28,7 @@ services:
       MYSQL_PASSWORD: examplepass
       MYSQL_RANDOM_ROOT_PASSWORD: '1'
     volumes:
-      - /volume1/docker/classicpressdb:/var/lib/mysql
+      - /volume1/docker/classicpress/db:/var/lib/mysql
 
 volumes:
   classicpress:
