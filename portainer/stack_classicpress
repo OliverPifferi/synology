@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+  classicpress:
+    image: marverix/classicpress:latest
+    container_name: ClassicPress
+    restart: always
+  
+    ports:
+      - 8181:80
+    environment:
+      CP_DB_HOST: db
+      CP_DB_USER: exampleuser
+      CP_DB_PASSWORD: examplepass
+      CP_DB_NAME: exampledb
+      APACHE_RUN_USER_ID: PUID
+      APACHE_RUN_GROUP_ID: PGID
+    
+    volumes:
+      - /volume1/docker/classicpress:/data
+      
+  db:
+    image: mysql:5.7
+    container_name: ClassicPress-DB
+    restart: always
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - /volume1/docker/classicpressdb:/var/lib/mysql
+
+volumes:
+  classicpress:
+  db:
