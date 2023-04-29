@@ -1,0 +1,65 @@
+version: "3.6"
+services:
+  redis:
+    image: redis
+    container_name: PaperlessNGX-REDIS
+    restart: always
+    volumes:
+      - /volume1/docker/paperlessngx/redis:/data
+
+  db:
+    image: postgres
+    container_name: PaperlessNGX-DB
+    restart: always
+    volumes:
+      - /volume1/docker/paperlessngx/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: paperless
+
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx
+    container_name: PaperlessNGX
+    restart: always
+    depends_on:
+      - db
+      - redis
+      - gotenberg
+      - tika
+    ports:
+      - 8777:8000
+    volumes:
+      - /volume1/docker/paperlessngx/data:/usr/src/paperless/data
+      - /volume1/docker/paperlessngx/media:/usr/src/paperless/media
+      - /volume1/docker/paperlessngx/export:/usr/src/paperless/export
+      - /volume1/docker/paperlessngx/consume:/usr/src/paperless/consume
+    environment:
+      PAPERLESS_REDIS: redis://redis:6379
+      PAPERLESS_DBHOST: db
+      USERMAP_UID: 1035
+      USERMAP_GID: 100
+      PAPERLESS_TIME_ZONE: Europe/Berlin
+      PAPERLESS_ADMIN_USER: myadmin
+      PAPERLESS_ADMIN_PASSWORD: myadminpw
+      PAPERLESS_OCR_LANGUAGE: deu+eng
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000/forms/libreoffice/convert#
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+
+  gotenberg:
+    image: gotenberg/gotenberg
+    restart: always
+    container_name: PaperlessNGX-GOTENBERG
+    ports:
+      - 3000:3000
+    command:
+      - "gotenberg"
+      - "--chromium-disable-routes=true"
+  
+  tika:
+    image: ghcr.io/paperless-ngx/tika
+    container_name: PaperlessNGX-TIKA
+    ports:
+      - 9998:9998
+    restart: always
