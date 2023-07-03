@@ -1,0 +1,44 @@
+# Docker Compose file for a Baikal server with latest MariaDB 10
+# Originally based on issue https://github.com/ckulka/baikal-docker/issues/10
+# Adopted for the use on Synology paired with Portainer
+
+version: "2"
+services:
+  baikal:
+    image: ckulka/baikal:nginx
+    container_name: baikal-app
+    restart: always
+    environment:
+      MSMTPRC: |
+        defaults
+        auth           on
+        tls            on
+        tls_trust_file /etc/ssl/certs/ca-certificates.crt
+        account        default
+        host           mailhost
+        port           587
+        from           mailaddress
+        user           mailuser
+        password       mailpw
+    ports:
+      - "8081:80"
+    volumes:
+      - /volume1/docker/baikal/config:/var/www/baikal/config
+      - /volume1/docker/baikal/data:/var/www/baikal/specific
+
+  db:
+    image: mariadb:latest
+    container_name: baikal-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysqlrootpassword
+      MYSQL_DATABASE: baikaldb
+      MYSQL_USER: baikaluser
+      MYSQL_PASSWORD: mysqluserpassword
+    volumes:
+      - /volume1/docker/baikal/db:/var/lib/mysql
+
+volumes:
+  config:
+  data:
+  db:

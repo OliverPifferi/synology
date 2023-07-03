@@ -1,0 +1,22 @@
+version: '3.9'
+services:
+  stirling-pdf:
+    container_name: stirling-pdf
+    image: frooodle/s-pdf
+    mem_limit: 1g
+    cpu_shares: 512
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 8081:8080
+    volumes:
+      - /volume1/docker/stirlingpdf/data:/usr/share/tesseract-ocr/4.00/tessdata:rw # Required for extra OCR languages
+      - /volume1/docker/stirlingpdf/config:/configs:rw
+    environment:
+     APP_LOCALE: de_DE # or fr_FR or de_DE
+     APP_HOME_NAME: Olivers PDF-Tools
+     APP_HOME_DESCRIPTION: One toolkit to rule them all!
+     APP_NAVBAR_NAME: Olivers PDF-Tools
+#    APP_ROOT_PATH: /
+#    ALLOW_GOOGLE_VISABILITY: true # or false
+    restart: on-failure:5

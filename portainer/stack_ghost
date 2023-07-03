@@ -1,36 +1,50 @@
-version: '3.8'
-
+version: '3.9'
 services:
-  ghost:
-    image: ghost
-    container_name: ghost
-    restart: always
-    depends_on:
-      - db
-    ports:
-      - 2368:2368
-    environment:
-      database__client: mysql
-      database__connection__host: db
-      database__connection__user: ghostuser
-      database__connection__password: ghostpw
-      database__connection__database: ghostdb
-      url: https://your.blog.com
-      NODE_ENV: production
-    volumes:
-      - /volume1/docker/ghost:/var/lib/ghost/content
-
-  db:
+  ghost-db:
     image: mysql
     container_name: ghost-db
-    command: mysqld --default-authentication-plugin=mysql_native_password
-    restart: always
-    ports:
-      - 3340:3306
+    hostname: ghost-db
+    security_opt:
+      - no-new-privileges:true
     environment:
-      MYSQL_ROOT_PASSWORD: mysqlroot
-      MYSQL_DATABASE: ghostdb
-      MYSQL_USER: ghostsuser
-      MYSQL_PASSWORD: ghostpw
+      - PUID=1035
+      - PGID=100
+      - TZ=Europe/Berlin
+      - MYSQL_ROOT_PASSWORD=superpassword
+      - MYSQL_DATABASE=ghost
+      - MYSQL_USER=ghostuser
+      - MYSQL_PASSWORD=ghostpass
     volumes:
-      - /volume1/docker/ghostdb:/var/lib/mysql
+      - /volume1/docker/ghost/db:/var/lib/mysql:rw
+    restart: always
+
+  ghost:
+    image: ghost:latest
+    container_name: ghost
+    hostname: ghost
+    security_opt:
+      - no-new-privileges:true
+    user: 1035:100
+    environment:
+      database__client: mysql
+      database__connection__host: ghost-db
+      database__connection__user: ghostuser
+      database__connection__password: ghostpass
+      database__connection__database: ghost
+      url: https://blog.pifferi.info
+      mail__transport: SMTP
+      mail__options__service: SMTP
+      mail__from: oliver@pifferi.info
+      mail__options__host: smtp.eu.mailgun.org
+      mail__options__port: 587
+      mail__options__auth__user: postmaster@mail.pifferi.info
+      mail__options__auth__pass: Your-own-app-password
+      NODE_ENV: production
+    volumes:
+      - /volume1/docker/ghost:/var/lib/ghost/content:rw
+    ports:
+      - 2368:2368
+    restart: always
+    depends_on:
+      ghost-db:
+        condition: service_started

@@ -1,3 +1,6 @@
+# Docker Compose file for ClassicPress and the MySQL-DB needed for a "lighter" Wordpress
+# Adopted for the use on Synology paired with Portainer
+
 version: '3.1'
 services:
   classicpress:

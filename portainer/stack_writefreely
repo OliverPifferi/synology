@@ -1,0 +1,38 @@
+version: "3.9"
+services:
+  db:
+    image: mariadb:jammy
+    container_name: writefreely-db
+    hostname: writefreely-db
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: out=$$(mysqladmin ping -h localhost -P 3306 -u root --password=rootpw 2>&1); echo $$out | grep 'mysqld is alive' || { echo $$out; exit 1; }
+    environment:
+      - TZ=Europe/Berlin
+      - MYSQL_ROOT_PASSWORD=rootpw
+      - MYSQL_DATABASE=writefreely
+      - MYSQL_USER=writefreely
+      - MYSQL_PASSWORD=writefreelypw
+    volumes:
+      - /volume1/docker/writefreely/db:/var/lib/mysql:rw
+    restart: always
+
+  writefreely:
+    image: algernon/writefreely:latest
+    container_name: writefreely
+    hostname: writefreely
+    security_opt:
+      - no-new-privileges:true
+    user: 1035:100
+    ports:
+      - 9800:8080
+    volumes:
+      - /volume1/docker/writefreely/data:/data
+    environment:
+      - WRITEFREELY_SITE_NAME=WriteFreely
+      - WRITEFREELY_HOST=https://writefreely.my.tld
+    restart: always
+    depends_on:
+      db:
+        condition: service_started
