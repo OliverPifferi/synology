@@ -1,0 +1,88 @@
+version: "3.9"
+services:
+  mastodon-redis:
+    image: redis
+    container_name: mastodon-redis
+    hostname: mastodon-redis
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping || exit 1"]
+    user: 1035:100
+    environment:
+      - TZ=Europe/Berlin
+    volumes:
+      - /volume1/docker/mastodon/redis:/data
+    restart: always
+
+  mastodon-db:
+    image: postgres
+    container_name: mastodon-db
+    hostname: mastodon-db
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "mastodon", "-U", "mastodon"]
+      timeout: 45s
+      interval: 10s
+      retries: 10
+    user: 1035:100
+    volumes:
+      - /volume1/docker/mastodon/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: mastodon
+      POSTGRES_USER: mastodon
+      POSTGRES_PASSWORD: your-db-password
+    restart: always
+    
+  mastodon:
+    image: lscr.io/linuxserver/mastodon:latest
+    container_name: mastodon
+    hostname: mastodon
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - PUID=1035
+      - PGID=100
+      - TZ=Europe/Berlin
+      - LOCAL_DOMAIN=social.your_mastodon_tld.com
+      - WEB_DOMAIN=xour_mastodon_tld.com
+      - REDIS_HOST=mastodon-redis
+      - REDIS_PORT=6379
+      - DB_HOST=mastodon-db
+      - DB_USER=mastodon
+      - DB_NAME=mastodon
+      - DB_PASS=your-db-password
+      - DB_PORT=5432
+      - ES_ENABLED=false
+      - ES_HOST=es
+      - ES_PORT=9200
+      - ES_USER=elastic
+      - ES_PASS=elastic
+      - SECRET_KEY_BASE=<a secret key>
+      - OTP_SECRET=<an otp secret key>
+      - S3_ENABLED=true
+      - S3_BUCKET=bucketname
+      - AWS_ACCESS_KEY_ID=JZJ1N5XV3H4DOFRY09IN
+      - AWS_SECRET_ACCESS_KEY=XeV0pO4Ba6bTlPHkskNreeZSfC158hRin7tMs6nF
+      - S3_PROTOCOL=https
+      - S3_REGION=eu-central-2
+      - S3_HOSTNAME=bucketname.s3.region.wasabisys.com
+      - S3_ENDPOINT=https://s3.region.wasabisys.com
+      - S3_ALIAS_HOST=files.caching_domain.com
+      - S3_FORCE_SINGLE_REQUEST=true
+      - SMTP_SERVER=your-smtp-server
+      - SMTP_PORT=587
+      - SMTP_LOGIN=-your-smtp-login
+      - SMTP_PASSWORD=your-smtp-password
+      - SMTP_FROM_ADDRESS=your-mailaddress
+    volumes:
+      - /volume1/docker/mastodon/config:/config
+    ports:
+      - 8562:443
+    restart: always
+    depends_on:
+      mastodon-redis:
+        condition: service_healthy
+      mastodon-db:
+        condition: service_started
